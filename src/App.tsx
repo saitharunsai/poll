@@ -1,10 +1,8 @@
 import "./App.css";
-import { LoginForm } from "./pages/auth/Login";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
 } from "react-router-dom";
 import { routeConfig } from "./routes";
 import { useAuthRefresh } from "./hooks/auth";

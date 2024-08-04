@@ -27,6 +27,7 @@ import { AuthLayout } from "../Layout";
 import { RootState } from "@/redux/store";
 import { login } from "@/redux/thunks/authThunk";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 
 const LoginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -39,6 +40,7 @@ const LoginFormContent: React.FC = () => {
   const { toast } = useToast();
   const dispatch: any = useDispatch();
   const { isLoading, error } = useSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(LoginSchema),
@@ -55,8 +57,8 @@ const LoginFormContent: React.FC = () => {
         title: "Login successful",
         description: "Welcome back!",
       });
+      navigate('/dashboard');
     } catch (error) {
-      console.log(error ,"--error")
       toast({
         title: "Login failed",
         description: "Please check your credentials and try again.",

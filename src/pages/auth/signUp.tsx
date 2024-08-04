@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../Layout";
 import { RootState } from "@/redux/store";
 import { signup } from "@/redux/thunks/authThunk";
@@ -51,6 +51,8 @@ type SignupFormValues = z.infer<typeof CreateUserSchema>;
 
 const SignupFormContent: React.FC = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+
   const dispatch: any = useDispatch();
   const { isLoading, error } = useSelector((state: RootState) => state.auth);
   const form = useForm<SignupFormValues>({
@@ -65,11 +67,12 @@ const SignupFormContent: React.FC = () => {
 
   const onSubmit = async (values: SignupFormValues) => {
     try {
-      await dispatch(signup(values))
+      await dispatch(signup(values));
       toast({
         title: "Account created successfully",
         description: "You can now log in with your new account.",
       });
+      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Error",
