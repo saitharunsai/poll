@@ -16,12 +16,44 @@ export interface AuthState {
   error: string | null;
 }
 
+const ACCESS_TOKEN_KEY = "accessToken";
+const REFRESH_TOKEN_KEY = "refreshToken";
+
 const initialState: AuthState = {
   user: null,
-  accessToken: localStorage.getItem("accessToken"),
-  refreshToken: localStorage.getItem("refreshToken"),
+  accessToken: localStorage.getItem(ACCESS_TOKEN_KEY),
+  refreshToken: localStorage.getItem(REFRESH_TOKEN_KEY),
   isLoading: false,
   error: null,
+};
+
+const setLoading = (state: AuthState) => {
+  state.isLoading = true;
+  state.error = null;
+};
+
+const setAuthData = (
+  state: AuthState,
+  action: PayloadAction<{
+    user: User;
+    accessToken: string;
+    refreshToken: string;
+  }>
+) => {
+  state.isLoading = false;
+  state.user = action.payload.user;
+  localStorage.setItem(ACCESS_TOKEN_KEY, action.payload.accessToken);
+  localStorage.setItem(REFRESH_TOKEN_KEY, action.payload.refreshToken);
+  state.accessToken = action.payload.accessToken;
+  state.refreshToken = action.payload.refreshToken;
+};
+
+const clearAuthData = (state: AuthState) => {
+  state.user = null;
+  state.accessToken = null;
+  state.refreshToken = null;
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
 };
 
 const authSlice = createSlice({
@@ -30,69 +62,27 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(signup.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(
-        signup.fulfilled,
-        (
-          state,
-          action: PayloadAction<{
-            user: User;
-            accessToken: string;
-            refreshToken: string;
-          }>
-        ) => {
-          state.isLoading = false;
-          state.user = action.payload.user;
-          localStorage.setItem("accessToken", action.payload.accessToken);
-          localStorage.setItem("refreshToken", action.payload.refreshToken);
-          state.accessToken = action.payload.accessToken;
-          state.refreshToken = action.payload.refreshToken;
-        }
-      )
+      .addCase(signup.pending, setLoading)
+      .addCase(signup.fulfilled, setAuthData)
       .addCase(signup.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(
-        login.fulfilled,
-        (
-          state,
-          action: PayloadAction<{
-            user: User;
-            accessToken: string;
-            refreshToken: string;
-          }>
-        ) => {
-          localStorage.setItem("accessToken", action.payload.accessToken);
-          localStorage.setItem("refreshToken", action.payload.refreshToken);
-          state.isLoading = false;
-          state.user = action.payload.user;
-          state.accessToken = action.payload.accessToken;
-          state.refreshToken = action.payload.refreshToken;
-        }
-      )
+      .addCase(login.pending, setLoading)
+      .addCase(login.fulfilled, setAuthData)
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      .addCase(logout.fulfilled, (state) => {
-        state.user = null;
-        state.accessToken = null;
-        state.refreshToken = null;
-      })
+      .addCase(logout.fulfilled, clearAuthData)
       .addCase(
         refreshToken.fulfilled,
         (
           state,
           action: PayloadAction<{ accessToken: string; refreshToken: string }>
         ) => {
+          localStorage.setItem(ACCESS_TOKEN_KEY, action.payload.accessToken);
+          localStorage.setItem(REFRESH_TOKEN_KEY, action.payload.refreshToken);
           state.accessToken = action.payload.accessToken;
           state.refreshToken = action.payload.refreshToken;
         }
