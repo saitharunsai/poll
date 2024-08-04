@@ -1,5 +1,101 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { login, logout, refreshToken, signup } from "../thunks/authThunk";
+import { postRequest, getRequest } from "@/axios/apiRequests";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
+export const signup = createAsyncThunk(
+  "auth/signup",
+  async (
+    userData: {
+      name: string;
+      email: string;
+      password: string;
+      role: "TEACHER" | "STUDENT";
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await postRequest<{
+        user: User;
+        accessToken: string;
+        refreshToken: string;
+      }>("/auth/signup", userData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        (error as AxiosError).response?.data || "An error occurred"
+      );
+    }
+  }
+);
+
+export const login = createAsyncThunk(
+  "auth/login",
+  async (
+    credentials: { email: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await postRequest<{
+        user: User;
+        accessToken: string;
+        refreshToken: string;
+      }>("/auth/login", credentials);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        (error as AxiosError).response?.data || "An error occurred"
+      );
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      await postRequest("/auth/logout", {});
+      return null;
+    } catch (error) {
+      return rejectWithValue(
+        (error as AxiosError).response?.data || "An error occurred"
+      );
+    }
+  }
+);
+
+export const refreshToken = createAsyncThunk(
+  "auth/refreshToken",
+  async (_, { getState, rejectWithValue }) => {
+    const { auth } = getState() as { auth: AuthState };
+    if (!auth.refreshToken) {
+      return rejectWithValue("No refresh token available");
+    }
+    try {
+      const response = await postRequest<{
+        accessToken: string;
+        refreshToken: string;
+      }>("/auth/refresh-token", { refreshToken: auth.refreshToken });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        (error as AxiosError).response?.data || "An error occurred"
+      );
+    }
+  }
+);
+
+export const fetchUser = createAsyncThunk(
+  "user/fetchUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest<{ data: User }>("/users/me");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        (error as AxiosError).response?.data || "An error occurred"
+      );
+    }
+  }
+);
 
 export interface User {
   id: string;
@@ -16,8 +112,8 @@ export interface AuthState {
   error: string | null;
 }
 
-const ACCESS_TOKEN_KEY = "accessToken";
-const REFRESH_TOKEN_KEY = "refreshToken";
+export const ACCESS_TOKEN_KEY = "accessToken";
+export const REFRESH_TOKEN_KEY = "refreshToken";
 
 const initialState: AuthState = {
   user: null,
@@ -64,12 +160,24 @@ const authSlice = createSlice({
     builder
       .addCase(signup.pending, setLoading)
       .addCase(signup.fulfilled, setAuthData)
-      .addCase(signup.rejected, (state, action) => {
+      .addCase(signup.rejected, (state, action: any) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload.message as string;
       })
       .addCase(login.pending, setLoading)
       .addCase(login.fulfilled, setAuthData)
+      .addCase(
+        fetchUser.fulfilled,
+        (
+          state,
+          action: PayloadAction<{
+            data: User;
+          }>
+        ) => {
+          state.isLoading = false;
+          state.user = action.payload.data;
+        }
+      )
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;

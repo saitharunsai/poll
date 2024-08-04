@@ -1,14 +1,15 @@
-import "./App.css";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routeConfig } from "./routes";
 import { useAuthRefresh } from "./hooks/auth";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { ACCESS_TOKEN_KEY, fetchUser } from "./redux/slices/authSlice";
+import { useSocket } from "./hooks/useSocket";
 
 function App() {
+  const dispatch: any = useDispatch();
+
   const renderRoutes = (routes: any[]) => {
     return routes.map((route, index) => (
       <Route key={index} path={route.path} element={route.element}>
@@ -17,6 +18,12 @@ function App() {
     ));
   };
   useAuthRefresh();
+  useSocket();
+
+  useEffect(() => {
+    localStorage.getItem(ACCESS_TOKEN_KEY) && dispatch(fetchUser());
+  }, [dispatch]);
+
   return (
     <Router>
       <Toaster />

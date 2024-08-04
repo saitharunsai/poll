@@ -1,5 +1,6 @@
-import { AppDispatch, RootState } from "@/redux/store";
-import { refreshToken } from "@/redux/thunks/authThunk";
+import { refreshToken } from "@/redux/slices/authSlice";
+import { AppDispatch } from "@/redux/store";
+import type { RootState } from "@/redux/store"; 
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 

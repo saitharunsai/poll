@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
+import pollsSlice from "./slices/pollSlice";
 import authSlice from "./slices/authSlice";
-import  pollsSlice  from "./slices/pollSlice";
+
 
 const store = configureStore({
   reducer: {

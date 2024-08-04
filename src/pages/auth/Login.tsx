@@ -24,10 +24,10 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
 import { AuthLayout } from "../Layout";
-import { RootState } from "@/redux/store";
-import { login } from "@/redux/thunks/authThunk";
+import type { RootState } from "@/redux/store"; 
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { login } from "@/redux/slices/authSlice";
 
 const LoginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -51,22 +51,26 @@ const LoginFormContent: React.FC = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    try {
-      await dispatch(login(values))
+    const resultAction = await dispatch(login(values));
+
+    if (login.fulfilled.match(resultAction)) {
       toast({
         title: "Login successful",
         description: "Welcome back!",
       });
-      navigate('/dashboard');
-    } catch (error) {
+      navigate("/dashboard");
+    } else {
+      let errorMessage = "Please check your credentials and try again";
+      if (resultAction.payload) {
+        errorMessage = resultAction.payload?.message;
+      }
       toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
+        title: "Error",
+        description: errorMessage,
         variant: "destructive",
       });
     }
   };
-
   return (
     <Card className="w-[350px] shadow-md">
       <CardHeader className="space-y-1">

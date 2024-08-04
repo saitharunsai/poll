@@ -56,6 +56,7 @@ export const CreatePollForm: React.FC<CreatePollFormProps> = ({
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
+    //@ts-ignore
     name: "options",
   });
 
