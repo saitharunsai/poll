@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import { LoginForm } from "@/pages/auth/Login";
 import { SignupForm } from "@/pages/auth/signUp";
 import Dashboard from "@/pages/dashboard";
@@ -8,9 +9,16 @@ const PrivateRoute = ({ children }: any) => {
   return token ? children : <Navigate to="/login" replace />;
 };
 
+const Layout = () => (
+  <div>
+    <Outlet />
+  </div>
+);
+
 export const routeConfig = [
   {
     path: "/",
+    element: <Layout />,
     children: [
       { path: "login", element: <LoginForm /> },
       { path: "signup", element: <SignupForm /> },
@@ -23,7 +31,7 @@ export const routeConfig = [
         ),
       },
       {
-        path: "/",
+        index: true,
         element: (
           <PrivateRoute>
             <Dashboard />

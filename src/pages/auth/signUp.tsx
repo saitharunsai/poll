@@ -31,9 +31,9 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../Layout";
-import { RootState } from "@/redux/store";
-import { signup } from "@/redux/thunks/authThunk";
+import type { RootState } from "@/redux/store"; 
 import { useDispatch, useSelector } from "react-redux";
+import { signup } from "@/redux/slices/authSlice";
 
 const CreateUserSchema = z.object({
   name: z
@@ -54,7 +54,7 @@ const SignupFormContent: React.FC = () => {
   const navigate = useNavigate();
 
   const dispatch: any = useDispatch();
-  const { isLoading, error } = useSelector((state: RootState) => state.auth);
+  const { isLoading } = useSelector((state: RootState) => state.auth);
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(CreateUserSchema),
     defaultValues: {
@@ -66,17 +66,22 @@ const SignupFormContent: React.FC = () => {
   });
 
   const onSubmit = async (values: SignupFormValues) => {
-    try {
-      await dispatch(signup(values));
+    const resultAction = await dispatch(signup(values));
+
+    if (signup.fulfilled.match(resultAction)) {
       toast({
         title: "Account created successfully",
         description: "You can now log in with your new account.",
       });
       navigate("/dashboard");
-    } catch (error) {
+    } else {
+      let errorMessage = "There was a problem creating your account.";
+      if (resultAction.payload) {
+        errorMessage = resultAction.payload?.message;
+      }
       toast({
         title: "Error",
-        description: "There was a problem creating your account.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
