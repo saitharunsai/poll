@@ -8,8 +8,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import sideImageAuth from "@/assets/sideImageAuth.png";
+import { useNavigate } from "react-router-dom";
 
 export function DropdownMenu() {
+  const navigate = useNavigate();
   return (
     <RadixDropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -28,7 +30,15 @@ export function DropdownMenu() {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>Settings</DropdownMenuItem>
-        <DropdownMenuItem>Log Out</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            //todo(sai tharun ) need to add api call
+            localStorage.clear();
+            navigate("/login");
+          }}
+        >
+          Log Out
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </RadixDropdownMenu>
   );
