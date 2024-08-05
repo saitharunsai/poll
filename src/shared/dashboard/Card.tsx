@@ -20,6 +20,8 @@ interface PollCardProps {
   endTime?: string | null;
   onStart: () => void;
   onEnd?: () => void;
+  id: string;
+  onPoll?: () => void;
   onKick?: (userId: string) => void;
   isTeacher: boolean;
   participants?: { id: string; name: string }[];
@@ -37,6 +39,7 @@ export function PollCard({
   onKick,
   active,
   status,
+  onPoll,
   isTeacher,
   participants = [],
 }: PollCardProps) {
@@ -70,15 +73,19 @@ export function PollCard({
           </div>
         )}
       </CardContent>
-      {isTeacher && status && (
-        <CardFooter className="flex flex-col items-start">
-          {!["COMPLETED", "PENDING"].includes(status) && (
-            <Button onClick={onEnd} variant="destructive" className="mb-2">
-              End Poll
-            </Button>
-          )}
-        </CardFooter>
-      )}
+
+      <CardFooter className="flex flex-col items-start">
+        {!["COMPLETED", "PENDING"].includes(status) && isTeacher && status && (
+          <Button onClick={onEnd} variant="destructive" className="mb-2">
+            End Poll
+          </Button>
+        )}
+        {["COMPLETED"].includes(status) && (
+          <Button onClick={onPoll} variant="default" className="mb-2">
+            View Polls
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   );
 }

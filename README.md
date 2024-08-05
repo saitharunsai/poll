@@ -1,30 +1,75 @@
-# React + TypeScript + Vite
+# Poll Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Poll Dashboard is a real-time polling application built with React and Vite. It allows users to create polls, participate in them, and view results in real-time.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. **User Authentication**: Secure login and registration system.
+2. **Protected Routes**: Certain routes are only accessible to authenticated users.
+3. **Poll Creation**: Authenticated users can create new polls.
+4. **Real-time Polling**: Users can participate in polls in real-time.
+5. **Poll Results**: View live updated results of polls.
 
-## Expanding the ESLint configuration
+## Technology Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React 18
+- TypeScript
+- Vite
+- Redux Toolkit for state management
+- React Router for routing
+- Axios for API requests
+- Socket.io for real-time updates
+- Tailwind CSS for styling
+- Recharts for data visualization
+- React Hook Form for form handling
+- Zod for schema validation
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+### Prerequisites
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- Node.js (version 14 or later)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/your-username/poll-dashboard.git
+   cd poll-dashboard
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+   or
+   ```
+   yarn
+   ```
+
+3. Start the development server:
+   ```
+   npm run dev
+   ```
+   or
+   ```
+   yarn dev
+   ```
+
+The application should now be running on `http://localhost:5173` (or another port if 5173 is in use).
+
+## Scripts
+
+- `npm run dev`: Start the development server
+- `npm run build`: Build the project for production
+- `npm run lint`: Run ESLint
+- `npm run preview`: Preview the production build locally
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
