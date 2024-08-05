@@ -1,37 +1,58 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { LoginForm } from "@/pages/auth/Login";
 import { SignupForm } from "@/pages/auth/signUp";
 import Dashboard from "@/pages/dashboard";
-import { Navigate } from "react-router-dom";
 
 const PrivateRoute = ({ children }: any) => {
   const token = localStorage.getItem("accessToken");
   return token ? children : <Navigate to="/login" replace />;
 };
 
-const Layout = () => (
-  <div>
-    <Outlet />
-  </div>
-);
+const PublicRoute = ({ children }: any) => {
+  const token = localStorage.getItem("accessToken");
+  return token ? <Navigate to="/dashboard" replace /> : children;
+};
+
+const Layout = () => {
+  const location = useLocation();
+  const token = localStorage.getItem("accessToken");
+
+  console.log("Current path:", location.pathname);
+
+  if (location.pathname === "/") {
+    return <Navigate to={token ? "/dashboard" : "/login"} replace />;
+  }
+
+  return (
+    <div>
+      <Outlet />
+    </div>
+  );
+};
 
 export const routeConfig = [
   {
     path: "/",
     element: <Layout />,
     children: [
-      { path: "login", element: <LoginForm /> },
-      { path: "signup", element: <SignupForm /> },
       {
-        path: "dashboard",
+        path: "login",
         element: (
-          <PrivateRoute>
-            <Dashboard />
-          </PrivateRoute>
+          <PublicRoute>
+            <LoginForm />
+          </PublicRoute>
         ),
       },
       {
-        index: true,
+        path: "signup",
+        element: (
+          <PublicRoute>
+            <SignupForm />
+          </PublicRoute>
+        ),
+      },
+      {
+        path: "dashboard",
         element: (
           <PrivateRoute>
             <Dashboard />
