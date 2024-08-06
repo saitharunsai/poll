@@ -39,7 +39,7 @@ type LoginFormValues = z.infer<typeof LoginSchema>;
 const LoginFormContent: React.FC = () => {
   const { toast } = useToast();
   const dispatch: any = useDispatch();
-  const { isLoading, error } = useSelector((state: RootState) => state.auth);
+  const { isLoading } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
