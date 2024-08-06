@@ -10,7 +10,7 @@ export const signup = createAsyncThunk(
       password: string;
       role: "TEACHER" | "STUDENT";
     },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const response = await postRequest<{
@@ -21,17 +21,17 @@ export const signup = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 export const login = createAsyncThunk(
   "auth/login",
   async (
     credentials: { email: string; password: string },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const response = await postRequest<{
@@ -42,10 +42,10 @@ export const login = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 export const logout = createAsyncThunk(
@@ -56,10 +56,10 @@ export const logout = createAsyncThunk(
       return null;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 export const refreshToken = createAsyncThunk(
@@ -77,10 +77,10 @@ export const refreshToken = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 export const fetchUser = createAsyncThunk(
@@ -91,10 +91,10 @@ export const fetchUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 export interface User {
@@ -134,7 +134,7 @@ const setAuthData = (
     user: User;
     accessToken: string;
     refreshToken: string;
-  }>
+  }>,
 ) => {
   state.isLoading = false;
   state.user = action.payload.user;
@@ -172,11 +172,11 @@ const authSlice = createSlice({
           state,
           action: PayloadAction<{
             data: User;
-          }>
+          }>,
         ) => {
           state.isLoading = false;
           state.user = action.payload.data;
-        }
+        },
       )
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -187,13 +187,13 @@ const authSlice = createSlice({
         refreshToken.fulfilled,
         (
           state,
-          action: PayloadAction<{ accessToken: string; refreshToken: string }>
+          action: PayloadAction<{ accessToken: string; refreshToken: string }>,
         ) => {
           localStorage.setItem(ACCESS_TOKEN_KEY, action.payload.accessToken);
           localStorage.setItem(REFRESH_TOKEN_KEY, action.payload.refreshToken);
           state.accessToken = action.payload.accessToken;
           state.refreshToken = action.payload.refreshToken;
-        }
+        },
       );
   },
 });

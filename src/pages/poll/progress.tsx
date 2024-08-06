@@ -11,7 +11,7 @@ const PollTimer = ({ pollId }: { pollId: string }) => {
 
     const startTimer = (
       startTimeStr: string | number | Date,
-      endTimeStr: string | number | Date
+      endTimeStr: string | number | Date,
     ) => {
       clearInterval(timerInterval);
       const startTime = new Date(startTimeStr).getTime();

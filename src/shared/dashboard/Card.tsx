@@ -75,14 +75,14 @@ export function PollCard({
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-col items-start">
+      <CardFooter className="flex justify-center space-x-2">
         {!["COMPLETED", "PENDING"].includes(status) && isTeacher && status && (
-          <Button onClick={onEnd} variant="destructive" className="mb-2">
+          <Button onClick={onEnd} variant="destructive">
             End Poll
           </Button>
         )}
-        {["COMPLETED"].includes(status) && (
-          <Button onClick={onPoll} variant="default" className="mb-2">
+        {["COMPLETED", "STARTED"].includes(status) && (
+          <Button onClick={onPoll} variant="default">
             View Polls
           </Button>
         )}

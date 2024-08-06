@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { PlusIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CreatePollForm, CreatePollFormValues } from '../poll/createPoll';
-import { createPoll } from '@/redux/slices/pollSlice';
-import { AppDispatch } from '@/redux/store';
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { PlusIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CreatePollForm, CreatePollFormValues } from "../poll/createPoll";
+import { createPoll } from "@/redux/slices/pollSlice";
+import { AppDispatch } from "@/redux/store";
 
 export const CreatePollButton: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,13 +12,15 @@ export const CreatePollButton: React.FC = () => {
 
   const handleCreatePoll = async (data: CreatePollFormValues) => {
     try {
-      await dispatch(createPoll({
-        ...data,
-        duration: Number(data.duration),
-      }));
+      await dispatch(
+        createPoll({
+          ...data,
+          duration: Number(data.duration),
+        }),
+      );
       setIsModalOpen(false);
     } catch (error) {
-      console.error('Failed to create poll:', error);
+      console.error("Failed to create poll:", error);
     }
   };
 

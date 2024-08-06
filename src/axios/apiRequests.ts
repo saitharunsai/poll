@@ -3,8 +3,8 @@ import {
   AxiosResponse,
   RawAxiosResponseHeaders,
   AxiosResponseHeaders,
-} from 'axios';
-import axiosInstance from './axiosInstance';
+} from "axios";
+import axiosInstance from "./axiosInstance";
 
 export interface ApiResponse<T> {
   data: T;
@@ -16,7 +16,7 @@ export interface ApiResponse<T> {
 
 export async function getRequest<T>(
   url: string,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ): Promise<ApiResponse<T>> {
   const response = await axiosInstance.get<T, AxiosResponse<T>>(url, config);
   return {
@@ -31,12 +31,12 @@ export async function getRequest<T>(
 export async function postRequest<T, D = any>(
   url: string,
   data: D,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ): Promise<ApiResponse<T>> {
   const response = await axiosInstance.post<T, AxiosResponse<T>, D>(
     url,
     data,
-    config
+    config,
   );
   return {
     data: response.data,
@@ -50,12 +50,12 @@ export async function postRequest<T, D = any>(
 export async function putRequest<T, D = any>(
   url: string,
   data: D,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ): Promise<ApiResponse<T>> {
   const response = await axiosInstance.put<T, AxiosResponse<T>, D>(
     url,
     data,
-    config
+    config,
   );
   return {
     data: response.data,
@@ -69,12 +69,12 @@ export async function putRequest<T, D = any>(
 export async function patchRequest<T, D = any>(
   url: string,
   data?: D,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ): Promise<ApiResponse<T>> {
   const response = await axiosInstance.patch<T, AxiosResponse<T>, D>(
     url,
     data,
-    config
+    config,
   );
   return {
     data: response.data,
@@ -87,7 +87,7 @@ export async function patchRequest<T, D = any>(
 
 export async function deleteRequest<T>(
   url: string,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ): Promise<ApiResponse<T>> {
   const response = await axiosInstance.delete<T, AxiosResponse<T>>(url, config);
   return {

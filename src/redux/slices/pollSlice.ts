@@ -4,6 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { getRequest, postRequest } from "@/axios/apiRequests";
 import { AxiosError } from "axios";
 import { socketService } from "@/services/socketService";
+import { toast } from "@/components/ui/use-toast";
 export interface Poll {
   id: string;
   title: string;
@@ -42,10 +43,10 @@ export const fetchPolls = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 interface CreatePollPayload {
@@ -65,11 +66,26 @@ export const createPoll = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
+
+interface ErrorResponseData {
+  message?: string;
+}
+
+export const getErrorMessage = (error: unknown): string => {
+  if (error instanceof AxiosError) {
+    const responseData = error.response?.data as ErrorResponseData | undefined;
+    return responseData?.message || "An error occurred";
+  } else if (error instanceof Error) {
+    return error.message || "An error occurred";
+  } else {
+    return "An unknown error occurred";
+  }
+};
 
 export const startPoll = createAsyncThunk(
   "polls/startPoll",
@@ -81,39 +97,45 @@ export const startPoll = createAsyncThunk(
       socketService.startPoll(response.data);
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
-      );
+      const errorMessage = getErrorMessage(error);
+      toast({
+        variant: "destructive",
+        title: errorMessage,
+      });
+      return rejectWithValue(errorMessage);
     }
-  }
+  },
 );
 
 export const answerPoll = createAsyncThunk(
   "polls/answerPoll",
   async (
     { pollId, answer }: { pollId: string; answer: string },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const response = await postRequest<Poll>(`/polls/answer`, {
         option: answer,
         pollId: pollId,
       });
+      toast({
+        title: "Answer Submitted Successfully",
+      });
       socketService.answerPoll(pollId, answer);
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 export const kickUserFromPoll = createAsyncThunk(
   "polls/kickUser",
   async (
     { pollId, userId }: { pollId: string; userId: string },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       await postRequest(`/polls/${pollId}/kick`, { userId });
@@ -121,10 +143,10 @@ export const kickUserFromPoll = createAsyncThunk(
       return { pollId, userId };
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 export const endPoll = createAsyncThunk(
@@ -136,13 +158,14 @@ export const endPoll = createAsyncThunk(
       });
       socketService.endPoll(pollId);
       dispatch(clearCurrentPoll());
+      dispatch(fetchPolls());
       return pollId;
     } catch (error) {
       return rejectWithValue(
-        (error as AxiosError).response?.data || "An error occurred"
+        (error as AxiosError).response?.data || "An error occurred",
       );
     }
-  }
+  },
 );
 
 const pollSlice = createSlice({
@@ -154,7 +177,7 @@ const pollSlice = createSlice({
     },
     updatePoll: (state, action: PayloadAction<Poll>) => {
       const index = state.polls.findIndex(
-        (poll) => poll.id === action.payload.id
+        (poll) => poll.id === action.payload.id,
       );
       if (index !== -1) {
         state.polls[index] = action.payload;
@@ -183,7 +206,7 @@ const pollSlice = createSlice({
         state.isLoading = false;
         state.polls = action.payload;
         const activePoll = action.payload.filter(
-          (poll) => poll.isActive && poll.status == "STARTED"
+          (poll) => poll.isActive && poll.status == "STARTED",
         );
         if (activePoll) {
           state.currentPoll = activePoll[0];
@@ -197,11 +220,11 @@ const pollSlice = createSlice({
         createPoll.fulfilled,
         (state, action: PayloadAction<{ data: Poll }>) => {
           state.polls.push(action.payload.data);
-        }
+        },
       )
       .addCase(startPoll.fulfilled, (state, action: PayloadAction<Poll>) => {
         const index = state.polls.findIndex(
-          (poll) => poll.id === action.payload.id
+          (poll) => poll.id === action.payload.id,
         );
         if (index !== -1) {
           state.polls[index] = action.payload;
@@ -210,7 +233,7 @@ const pollSlice = createSlice({
       })
       .addCase(answerPoll.fulfilled, (state, action: PayloadAction<Poll>) => {
         const index = state.polls.findIndex(
-          (poll) => poll.id === action.payload.id
+          (poll) => poll.id === action.payload.id,
         );
         if (index !== -1) {
           state.polls[index] = action.payload;
@@ -223,13 +246,13 @@ const pollSlice = createSlice({
         kickUserFromPoll.fulfilled,
         (state, action: PayloadAction<{ pollId: string; userId: string }>) => {
           const pollIndex = state.polls.findIndex(
-            (poll) => poll.id === action.payload.pollId
+            (poll) => poll.id === action.payload.pollId,
           );
           if (pollIndex !== -1) {
             state.polls[pollIndex].answers = state.polls[
               pollIndex
             ].answers.filter(
-              (answer) => answer.userId !== action.payload.userId
+              (answer) => answer.userId !== action.payload.userId,
             );
           }
           if (
@@ -237,14 +260,14 @@ const pollSlice = createSlice({
             state.currentPoll.id === action.payload.pollId
           ) {
             state.currentPoll.answers = state.currentPoll.answers.filter(
-              (answer) => answer.userId !== action.payload.userId
+              (answer) => answer.userId !== action.payload.userId,
             );
           }
-        }
+        },
       )
       .addCase(endPoll.fulfilled, (state, action: PayloadAction<string>) => {
         const index = state.polls.findIndex(
-          (poll) => poll.id === action.payload
+          (poll) => poll.id === action.payload,
         );
         if (index !== -1) {
           state.polls[index].isActive = false;

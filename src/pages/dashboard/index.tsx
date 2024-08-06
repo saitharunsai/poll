@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Header } from "./Header";
 import { CurrentPollComponent } from "../poll/answer";
@@ -6,18 +6,23 @@ import { fetchPolls } from "@/redux/slices/pollSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { PollList } from "../poll/list";
 import { CreatePollButton } from "../poll/CreatePollButton";
+import PollResultsGraph from "../poll/graph";
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { polls, isLoading, error, currentPoll } = useSelector(
-    (state: RootState) => state.polls
+    (state: RootState) => state.polls,
   );
   const { user } = useSelector((state: RootState) => state.auth);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedPollId, setSelectedPollId] = useState<string | null>(null);
   useEffect(() => {
     dispatch(fetchPolls());
   }, [dispatch]);
-
+  const handleOpenPollResults = (pollId: string) => {
+    setSelectedPollId(pollId);
+    setIsOpen(true);
+  };
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -26,9 +31,17 @@ const Dashboard: React.FC = () => {
           <h1 className="text-2xl font-bold">All Polls</h1>
           {user?.role === "TEACHER" && <CreatePollButton />}
         </div>
-
-        {currentPoll && user?.role === "STUDENT" && currentPoll.answers && (
-          <CurrentPollComponent />
+        {selectedPollId && (
+          <PollResultsGraph
+            isOpen={isOpen}
+            onOpenChange={setIsOpen}
+            pollId={selectedPollId}
+          />
+        )}
+        {currentPoll && user?.role === "STUDENT" && (
+          <CurrentPollComponent
+            onPoll={(pollId) => handleOpenPollResults(pollId)}
+          />
         )}
 
         <PollList

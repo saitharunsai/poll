@@ -15,7 +15,7 @@ class SocketService {
   initialize(dispatch: AppDispatch) {
     if (this.socket) {
       console.warn(
-        "Socket is already initialized. Closing existing connection."
+        "Socket is already initialized. Closing existing connection.",
       );
       this.socket.close();
     }
@@ -30,7 +30,7 @@ class SocketService {
         reconnectionDelayMax: 5000,
         timeout: 10000,
         transports: ["websocket"],
-      }
+      },
     );
 
     this.socket.on("connect", () => {
@@ -67,7 +67,7 @@ class SocketService {
       "userKicked",
       ({ pollId, userId }: { pollId: string; userId: string }) => {
         console.log(`User ${userId} was kicked from poll ${pollId}`);
-      }
+      },
     );
     return this.socket;
   }

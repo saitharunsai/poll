@@ -32,9 +32,7 @@ export const PollList: React.FC<PollListProps> = ({
     );
   }
 
-
   const handleOpenPollResults = (pollId: string) => {
-    console.log(pollId)
     setSelectedPollId(pollId);
     setIsOpen(true);
   };

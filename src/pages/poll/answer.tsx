@@ -7,18 +7,20 @@ import type { RootState } from "@/redux/store";
 import { answerPoll } from "@/redux/slices/pollSlice";
 import PollTimer from "./progress";
 
-export const CurrentPollComponent: React.FC = () => {
+export const CurrentPollComponent: React.FC<{
+  onPoll: (pollId: string) => void;
+}> = ({ onPoll }) => {
   const dispatch: any = useDispatch();
   const currentPoll = useSelector(
-    (state: RootState) => state.polls.currentPoll
+    (state: RootState) => state.polls.currentPoll,
   );
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const [selectedAnswer, setSelectedAnswer] = useState("");
 
   useEffect(() => {
     if (currentUser && currentPoll) {
-      const userAnswer = currentPoll.answers.find(
-        (answer) => answer.userId === currentUser.id
+      const userAnswer = currentPoll.answers?.find(
+        (answer) => answer.userId === currentUser.id,
       );
       if (userAnswer) {
         setSelectedAnswer(userAnswer.option);
@@ -52,10 +54,10 @@ export const CurrentPollComponent: React.FC = () => {
                   value={option}
                   id={`option-${index}`}
                   disabled={Boolean(
-                    currentPoll.answers.find(
+                    currentPoll.answers?.find(
                       (answer) =>
-                        answer.userId === currentUser.id && answer.option
-                    )
+                        answer.userId === currentUser.id && answer.option,
+                    ),
                   )}
                 />
                 <Label htmlFor={`option-${index}`}>{option}</Label>
@@ -64,14 +66,31 @@ export const CurrentPollComponent: React.FC = () => {
           </RadioGroup>
           <Button
             onClick={handleAnswer}
-            disabled={!selectedAnswer || Boolean(
-              currentPoll.answers.find(
-                (answer) =>
-                  answer.userId === currentUser.id && answer.option
+            disabled={
+              !selectedAnswer ||
+              Boolean(
+                currentPoll.answers?.find(
+                  (answer) => answer.userId === currentUser.id && answer.option,
+                ),
               )
-            )}
+            }
           >
             Submit Answer
+          </Button>
+          <Button
+            className="ml-2"
+            onClick={() => {
+              onPoll(currentPoll.id);
+            }}
+            disabled={
+              !Boolean(
+                currentPoll.answers?.find(
+                  (answer) => answer.userId === currentUser.id && answer.option,
+                ),
+              )
+            }
+          >
+            View Live Polls
           </Button>
         </>
       )}

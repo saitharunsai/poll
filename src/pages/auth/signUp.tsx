@@ -31,7 +31,7 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../Layout";
-import type { RootState } from "@/redux/store"; 
+import type { RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { signup } from "@/redux/slices/authSlice";
 

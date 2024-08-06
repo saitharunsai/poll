@@ -1,4 +1,8 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios';
+import axios, {
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+  AxiosError,
+} from "axios";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_APP_API_URL}`,
@@ -8,7 +12,7 @@ const axiosInstance: AxiosInstance = axios.create({
 // Request interceptor to add the Authorization header
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig<any>) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -16,7 +20,7 @@ axiosInstance.interceptors.request.use(
   },
   (error: any) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor to handle 401 status
@@ -27,10 +31,10 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.clear();
-      window.location.href = '/login'; // Redirect to login page
+      window.location.href = "/login"; // Redirect to login page
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;

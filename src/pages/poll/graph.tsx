@@ -75,7 +75,7 @@ const PollResultsGraph: React.FC<PollResultsGraphProps> = ({
       votes: {
         label: "Votes",
       },
-    } as ChartConfig
+    } as ChartConfig,
   );
 
   return (
